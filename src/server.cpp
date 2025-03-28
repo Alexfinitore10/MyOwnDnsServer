@@ -77,12 +77,12 @@ int main() {
 
        buffer[bytesRead] = '\0';
        std::cout << "Received " << bytesRead << " bytes: " << buffer << std::endl;
-
+/* 
        if(bytesRead != 12)
        {
         std::cout<<"Richiesta DNS non consona, non sono arrivati 12 bytes"<<std::endl;
         continue;
-       }
+       } */
 
        DNS_message message;
 
