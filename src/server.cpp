@@ -7,12 +7,12 @@
 struct DNS_message
 {
     u_int16_t PacketID;
-    bool qrIndicator;
+    uint16_t qrIndicator;
     u_int8_t operationCode;
-    bool authoritativeAnswer;
-    bool truncation;
-    bool recursionDesired;
-    bool recursionAvailable;
+    uint16_t authoritativeAnswer;
+    uint16_t truncation;
+    uint16_t recursionDesired;
+    uint16_t recursionAvailable;
     uint8_t Reserved;
     uint8_t responseCode;
     u_int16_t questionCount;
