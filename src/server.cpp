@@ -110,4 +110,5 @@ DNS_message makeHeader(DNS_message message)
     message.an = 0;
     message.ns = 0;
     message.ar = 0;
+    return message;
 }
