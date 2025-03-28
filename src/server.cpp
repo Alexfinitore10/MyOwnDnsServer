@@ -4,6 +4,26 @@
 #include <netinet/in.h>
 #include <unistd.h>
 
+struct DNS_message
+{
+    u_int16_t PacketID;
+    bool qrIndicator;
+    u_int8_t operationCode;
+    bool authoritativeAnswer;
+    bool truncation;
+    bool recursionDesired;
+    bool recursionAvailable;
+    uint8_t Reserved;
+    uint8_t responseCode;
+    u_int16_t questionCount;
+    uint16_t answeredRecordCount;
+    u_int16_t authorityRecordCount;
+    u_int16_t additionalRecordCount;
+};
+
+DNS_message makeHeader(DNS_message);
+
+
 int main() {
     // Flush after every std::cout / std::cerr
     std::cout << std::unitbuf;
@@ -17,9 +37,9 @@ int main() {
 
       // Uncomment this block to pass the first stage
    int udpSocket;
-   struct sockaddr_in clientAddress;
+   struct sockaddr_in clientAddress;//classica struttura dati delle socket, come in C
 
-   udpSocket = socket(AF_INET, SOCK_DGRAM, 0);
+   udpSocket = socket(AF_INET, SOCK_DGRAM, 0);//Sock_Dgram è per UDP
    if (udpSocket == -1) {
        std::cerr << "Socket creation failed: " << strerror(errno) << "..." << std::endl;
        return 1;
@@ -58,11 +78,18 @@ int main() {
        buffer[bytesRead] = '\0';
        std::cout << "Received " << bytesRead << " bytes: " << buffer << std::endl;
 
-       // Create an empty response
-       char response[1] = { '\0' };
+       if(bytesRead != 12)
+       {
+        std::cout<<"Richiesta DNS non consona, non sono arrivati 12 bytes"<<std::endl;
+        continue;
+       }
+
+       DNS_message message;
+
+       message = makeHeader(message);
 
        // Send response
-       if (sendto(udpSocket, response, sizeof(response), 0, reinterpret_cast<struct sockaddr*>(&clientAddress), sizeof(clientAddress)) == -1) {
+       if (sendto(udpSocket, &message, sizeof(message), 0, reinterpret_cast<struct sockaddr*>(&clientAddress), sizeof(clientAddress)) == -1) {
            perror("Failed to send response");
        }
    }
@@ -70,4 +97,22 @@ int main() {
    close(udpSocket);
 
     return 0;
+}
+
+DNS_message makeHeader(DNS_message message)
+{
+    message.PacketID = 1234;
+    message.qrIndicator = 1;
+    message.operationCode = 0;
+    message.authoritativeAnswer = 0;
+    message.truncation = 0;
+    message.recursionDesired = 0;
+    message.recursionAvailable = 0;
+    message.Reserved = 0;
+    message.responseCode = 0;
+    message.questionCount = 0;
+    message.answeredRecordCount = 0;
+    message.authorityRecordCount = 0;
+    message.additionalRecordCount = 0;
+    return message;
 }
