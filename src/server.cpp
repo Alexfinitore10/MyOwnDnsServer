@@ -6,19 +6,12 @@
 
 struct DNS_message
 {
-    u_int16_t PacketID;
-    uint16_t qrIndicator;
-    u_int8_t operationCode;
-    uint16_t authoritativeAnswer;
-    uint16_t truncation;
-    uint16_t recursionDesired;
-    uint16_t recursionAvailable;
-    uint8_t Reserved;
-    uint8_t responseCode;
-    u_int16_t questionCount;
-    uint16_t answeredRecordCount;
-    u_int16_t authorityRecordCount;
-    u_int16_t additionalRecordCount;
+    uint16_t ID;
+    uint16_t flags;
+    uint16_t qd;
+    uint16_t an;
+    uint16_t ns;
+    uint16_t ar;
 };
 
 DNS_message makeHeader(DNS_message);
@@ -101,18 +94,20 @@ int main() {
 
 DNS_message makeHeader(DNS_message message)
 {
-    message.PacketID = htons(1234);
-    message.qrIndicator = 1;
-    message.operationCode = 0;
-    message.authoritativeAnswer = 0;
-    message.truncation = 0;
-    message.recursionDesired = 0;
-    message.recursionAvailable = 0;
-    message.Reserved = 0;
-    message.responseCode = 0;
-    message.questionCount = 0;
-    message.answeredRecordCount = 0;
-    message.authorityRecordCount = 0;
-    message.additionalRecordCount = 0;
-    return message;
+    message.ID = htons(1234);
+    uint16_t flags = (1 << 15) |
+    (0 << 11) |  // Opcode = 0 (Standard Query)
+    (0 << 10) |  // AA = 0 (Non autoritativo)
+    (0 << 9)  |  // TC = 0 (Non troncato)
+    (0 << 8)  |  // RD = 0 (Nessuna ricorsione richiesta)
+    (0 << 7)  |  // RA = 0 (Nessuna ricorsione disponibile)
+    (0 << 6)  |  // Z = 0
+    (0 << 5)  |  // Z = 0
+    (0 << 4)  |  // Z = 0
+    (0 << 0);
+    message.flags = htons(flags);
+    message.qd = 0;
+    message.an = 0;
+    message.ns = 0;
+    message.ar = 0;
 }
