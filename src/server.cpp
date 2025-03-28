@@ -102,7 +102,7 @@ int main() {
 DNS_message makeHeader(DNS_message message)
 {
     message.PacketID = htons(1234);
-    message.qrIndicator = 0;
+    message.qrIndicator = 1;
     message.operationCode = htons(0);
     message.authoritativeAnswer = 0;
     message.truncation = 0;
