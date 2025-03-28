@@ -103,16 +103,16 @@ DNS_message makeHeader(DNS_message message)
 {
     message.PacketID = htons(1234);
     message.qrIndicator = 1;
-    message.operationCode = htons(0);
+    message.operationCode = 0;
     message.authoritativeAnswer = 0;
     message.truncation = 0;
     message.recursionDesired = 0;
     message.recursionAvailable = 0;
-    message.Reserved = htons(0);
-    message.responseCode = htons(0);
-    message.questionCount = htons(0);
-    message.answeredRecordCount = htons(0);
-    message.authorityRecordCount = htons(0);
-    message.additionalRecordCount = htons(0);
+    message.Reserved = 0;
+    message.responseCode = 0;
+    message.questionCount = 0;
+    message.answeredRecordCount = 0;
+    message.authorityRecordCount = 0;
+    message.additionalRecordCount = 0;
     return message;
 }
