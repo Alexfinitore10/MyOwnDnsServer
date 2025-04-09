@@ -3,18 +3,41 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <unistd.h>
+#include <vector>
 
 struct DNS_message
 {
     uint16_t ID;
     uint16_t flags;
-    uint16_t qd;
+    uint16_t qd; //question, usually just 1
     uint16_t an;
     uint16_t ns;
     uint16_t ar;
 };
 
+struct DNS_question
+{
+    std::vector<std::string> name;
+    u_short type;
+    u_short qclass;
+
+    //funzione per l'encoding
+    std::vector<uint8_t> serialize(){
+        std::vector<uint8_t> data = encode_domain(name);
+        uint16_t t = htons(type);
+        uint16_t c = htons(qclass);
+        data.insert(data.end(), reinterpret_cast<uint8_t*>(&t), reinterpret_cast<uint8_t*>(&t) + 2);
+        data.insert(data.end(), reinterpret_cast<uint8_t*>(&c), reinterpret_cast<uint8_t*>(&c) + 2);
+        return data;
+
+    }
+};
+
+
+
 DNS_message makeHeader(DNS_message);
+DNS_message makeResponse(DNS_message);
+std::vector<uint8_t> encode_domain(std::vector<std::string>&);
 
 
 int main() {
@@ -80,6 +103,7 @@ int main() {
        DNS_message message;
 
        message = makeHeader(message);
+       message = makeResponse(message);
 
        // Send response
        if (sendto(udpSocket, &message, sizeof(message), 0, reinterpret_cast<struct sockaddr*>(&clientAddress), sizeof(clientAddress)) == -1) {
@@ -117,3 +141,24 @@ DNS_message makeHeader(DNS_message message)
     std::cout<<std::hex<< message.flags << "\n";
     return message;
 }
+
+DNS_message makeResponse(DNS_message message)
+{
+    message.qd = htons(message.qd++);
+
+}
+
+std::vector<uint8_t> encode_domain(std::vector<std::string>& dominio)
+{
+    std::vector<uint8_t> encoded;
+    for (auto& label : dominio)
+    {
+        encoded.push_back(static_cast<uint8_t>(label.size()));//questo è per l'etichetta \x06 es.
+        encoded.insert(encoded.end(), label.begin(), label.end());//inserisce i caratteri
+    }
+    encoded.push_back(0);//inserisce il byte finale, già formattato, credo
+    return encoded;
+}
+
+
+
