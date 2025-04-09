@@ -29,7 +29,6 @@ struct DNS_question
         data.insert(data.end(), reinterpret_cast<uint8_t*>(&t), reinterpret_cast<uint8_t*>(&t) + 2);
         data.insert(data.end(), reinterpret_cast<uint8_t*>(&c), reinterpret_cast<uint8_t*>(&c) + 2);
         return data;
-
     }
 };
 
@@ -144,7 +143,9 @@ DNS_message makeHeader(DNS_message message)
 
 DNS_message makeResponse(DNS_message message)
 {
+    DNS_question question;
     message.qd = htons(message.qd++);
+    
 
 }
 
